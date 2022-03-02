@@ -47,11 +47,27 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         
         images.insert(image, at: 0)
         collectionView.reloadData()
+        
+        
+        guard let mcSession = mcSession else { return }
+        
+        if mcSession.connectedPeers.count > 0 {
+            if let imageData = image.pngData() {
+                do {
+                    try mcSession.send(imageData, toPeers: mcSession.connectedPeers, with: .reliable)
+                } catch {
+                    let ac = UIAlertController(title: "Send error", message: error.localizedDescription, preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .default))
+                    present(ac, animated: true)
+                }
+            }
+        }
     }
     
     func startHosting(action: UIAlertAction) {
         guard let mcSession = mcSession else { return }
         mcAdvertiserAssistant = MCAdvertiserAssistant(serviceType: "hws-project25", discoveryInfo: nil, session: mcSession)
+        mcAdvertiserAssistant?.start()
     }
     
     func joinSession(action: UIAlertAction) {
