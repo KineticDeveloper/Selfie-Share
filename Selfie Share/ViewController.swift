@@ -8,12 +8,12 @@
 import MultipeerConnectivity
 import UIKit
 
-class ViewController: UICollectionViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, MCSessionDelegate, MCBrowserViewControllerDelegate{
+class ViewController: UICollectionViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, MCSessionDelegate, MCBrowserViewControllerDelegate, MCNearbyServiceAdvertiserDelegate {
     var images = [UIImage]()
     
     var peerID = MCPeerID(displayName: UIDevice.current.name)
     var mcSession: MCSession?
-    var mcAdvertiserAssistant: MCAdvertiserAssistant?
+    var mcAdAssistant: MCNearbyServiceAdvertiser?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,10 +64,26 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         }
     }
     
+    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
+
+        let ac = UIAlertController(title: title, message: "\(peerID.displayName) wants to connect", preferredStyle: .alert)
+
+        ac.addAction(UIAlertAction(title: "Allow", style: .default, handler: { [weak self] _ in
+            invitationHandler(true, self?.mcSession)
+        }))
+
+        ac.addAction(UIAlertAction(title: "Decline", style: .cancel, handler: { _ in
+            invitationHandler(false, nil)
+        }))
+
+        present(ac, animated: true)
+    }
+    
     func startHosting(action: UIAlertAction) {
-        guard let mcSession = mcSession else { return }
-        mcAdvertiserAssistant = MCAdvertiserAssistant(serviceType: "hws-project25", discoveryInfo: nil, session: mcSession)
-        mcAdvertiserAssistant?.start()
+        guard mcSession != nil else { return }
+        mcAdAssistant = MCNearbyServiceAdvertiser(peer: peerID, discoveryInfo: nil, serviceType: "hws-project25")
+        mcAdAssistant?.delegate = self
+        mcAdAssistant?.startAdvertisingPeer()
     }
     
     func joinSession(action: UIAlertAction) {
@@ -75,6 +91,11 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         let mcBrowser = MCBrowserViewController(serviceType: "hws-project25", session: mcSession)
         mcBrowser.delegate = self
         present(mcBrowser, animated: true)
+    }
+    
+    func stopSession(via action: UIAlertAction) {
+        mcAdAssistant?.stopAdvertisingPeer()
+        mcSession?.disconnect()
     }
     
     func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {

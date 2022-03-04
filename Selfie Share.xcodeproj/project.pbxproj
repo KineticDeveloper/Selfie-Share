@@ -292,6 +292,7 @@
 				DEVELOPMENT_TEAM = 2T8V526C54;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Selfie Share/Info.plist";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Network usage.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -321,6 +322,7 @@
 				DEVELOPMENT_TEAM = 2T8V526C54;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Selfie Share/Info.plist";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Network usage.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
